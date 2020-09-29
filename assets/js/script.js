@@ -44,8 +44,73 @@ var loadTasks = function () {
 var saveTasks = function () {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 };
+//The jQuery UI method, sortable(), turned every element with the class list-group into a sortable list. The connectWith property then linked these sortable lists with any other lists that have the same class
+// enable draggable/sortable feature on list-group elements
+$(".card .list-group").sortable({
+  // enable dragging across lists
+  connectWith: $(".card .list-group"),
+  scroll: false,
+  tolerance: "pointer",
+  helper: "clone",
+  activate: function (event, ui) {
+    console.log(ui);
+  },
+  deactivate: function (event, ui) {
+    console.log(ui);
+  },
+  over: function (event) {
+    console.log(event);
+  },
+  out: function (event) {
+    console.log(event);
+  },
+  update: function () {
+    var tempArr = [];
 
+    // loop over current set of children in sortable list
+    $(this)
+      .children()
+      .each(function () {
+        // save values in temp array
+        tempArr.push({
+          text: $(this)
+            .find("p")
+            .text()
+            .trim(),
+          date: $(this)
+            .find("span")
+            .text()
+            .trim()
+        });
+      });
 
+    // trim down list's ID to match object property
+    var arrName = $(this)
+      .attr("id")
+      .replace("list-", "");
+
+    // update array on tasks object and save
+    tasks[arrName] = tempArr;
+    saveTasks();
+  },
+  stop: function (event) {
+    $(this).removeClass("dropover");
+  }
+});
+$("#trash").droppable({
+  accept: ".card .list-group-item",
+  tolerance: "touch",
+  drop: function (event, ui) {
+    console.log("drop");
+    ui.draggable.remove();
+  },
+  over: function (event, ui) {
+    console.log("over");
+  },
+  out: function (event, ui) {
+    console.log("out");
+  }
+});
 
 
 // modal was triggered
@@ -180,7 +245,10 @@ $(".list-group").on("blur", "input[type='text']", function () {
 
   // replace input with span element
   $(this).replaceWith(taskSpan);
+
 });
+
+
 
 // remove all tasks
 $("#remove-tasks").on("click", function () {
@@ -195,5 +263,3 @@ $("#remove-tasks").on("click", function () {
 
 // load tasks for the first time
 loadTasks();
-
-
