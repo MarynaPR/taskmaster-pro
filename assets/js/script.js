@@ -51,6 +51,7 @@ var loadTasks = function () {
 //We're using .isAfter(), which, when we read it left to right, gets the current time from moment() and checks if that value comes later than the value of the time variable.
 //Here, we're checking if the current date and time are later than the date and time we pulled from taskEl. If so, the date and time from taskEl are in the past, and we add the list-group-item-danger Bootstrap class to the entire task element. This will give it a red background, to let users know the date has passed.
 var auditTask = function (taskEl) {
+
   // get date from task element
   var date = $(taskEl).find("span").text().trim();
 
@@ -67,6 +68,7 @@ var auditTask = function (taskEl) {
   else if (Math.abs(moment().diff(time, "days")) <= 2) {
     $(taskEl).addClass("list-group-item-warning");
   }
+  //console.log(taskEl)
 };
 
 var saveTasks = function () {
@@ -81,15 +83,22 @@ $(".card .list-group").sortable({
   tolerance: "pointer",
   helper: "clone",
   activate: function (event, ui) {
+    $(this).addClass("dropover");
+    $(".bottom-trash").addClass("bottom-trash-drag");
     console.log(ui);
   },
   deactivate: function (event, ui) {
+    $(this).removeClass("dropover");
+    $(".bottom-trash").removeClass("bottom-trash-drag");
     console.log(ui);
+
   },
   over: function (event) {
+    $(event.target).addClass("dropover-active");
     console.log(event);
   },
   out: function (event) {
+    $(event.target).removeClass("dropover-active");
     console.log(event);
   },
   update: function () {
@@ -131,12 +140,15 @@ $("#trash").droppable({
   drop: function (event, ui) {
     console.log("drop");
     ui.draggable.remove();
+    $(".bottom-trash").removeClass("bottom-trash-active");
   },
   over: function (event, ui) {
     console.log("over");
+    $(".bottom-trash").addClass("bottom-trash-activate");
   },
   out: function (event, ui) {
     console.log("out");
+    $(".bottom-trash").removeClass("bottom-trash-active");
   }
 });
 
@@ -154,7 +166,7 @@ $("#task-form-modal").on("shown.bs.modal", function () {
 });
 
 // save button in modal was clicked
-$("#task-form-modal .btn-primary").click(function () {
+$("#task-form-modal .btn-save").click(function () {
   // get form values
   var taskText = $("#modalTaskDescription").val();
   var taskDate = $("#modalDueDate").val();
@@ -279,3 +291,27 @@ $("#remove-tasks").on("click", function () {
 
 // load tasks for the first time
 loadTasks();
+
+//the setTimeout() function was given two arguments: a callback function and a number. The callback function is the block of code we want to have executed after an amount of time has passed. That amount of time comes from the second argument, which is the number of milliseconds we want to wait for.In the setTimeout() function we just implemented, we want the browser to wait five seconds (5,000 milliseconds) before executing a function that puts an alert dialog on the screen. The moment that function is done running, it's done forever and won't execute again
+//setTimeout(function () {
+//  alert("This message happens after 5 seconds!");
+//}, 5000);
+
+
+//the main difference between setTimeout() and setInterval(): the former will only run once while the latter will run on a timed schedule based on what is entered in the second argument.
+// setInterval(function () {
+//   alert("This alert shows up every five seconds!");
+// }, 5000);
+
+// setInterval(function () {
+//   $(".card .list-group-item").each(function (el) {
+//     auditTask(el);
+//   });
+// }, 5000);
+
+setInterval(function () {
+  // code to execute
+}, (1000 * 60) * 30);
+
+//By adding the onClose method, we can instruct the dateInput element to trigger its own change event and execute the callback function tied to it.
+//The .diff() method gets the difference between the first date and the date provided in the ().
